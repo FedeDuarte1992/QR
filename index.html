@@ -3,38 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Editor Pro+ Elite</title>
+    <title>QR Pro Master Elite</title>
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
     <script defer src="/_vercel/insights/script.js"></script>
-    <style>
-        :root { --primary: #c62828; --bg: #f1f5f9; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 30px; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 950px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
-        h2 { grid-column: 1 / -1; margin: 0; text-align: center; color: #1e293b; }
 
-        /* TABS DE TIPO DE CONTENIDO */
-        .type-selector { grid-column: 1 / -1; display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; color: #64748b; transition: 0.2s; }
+    <style>
+        :root { --primary: #c62828; --bg: #f8f9fa; --border: #dee2e6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        
+        .main-container { display: grid; grid-template-columns: 1fr 380px; gap: 25px; max-width: 1100px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        /* Tabs Superiores de Contenido */
+        .type-selector { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .tab-btn { padding: 10px 15px; border: 1px solid var(--border); background: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: #555; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .field-group { border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.2rem; background: #f8fafc; margin-bottom: 1.5rem; }
-        .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
-        .group-header h3 { margin: 0; font-size: 1rem; color: #475569; }
-        
-        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+        /* Acordeones de Configuración */
+        .accordion { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px; }
+        .acc-header { background: #fff; padding: 14px; cursor: pointer; font-weight: bold; color: var(--primary); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); transition: 0.3s; }
+        .acc-header:hover { background: #fff5f5; }
+        .acc-content { padding: 20px; display: none; background: white; }
+        .acc-content.active { display: block; }
+
+        /* Campos de Entrada */
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .content-section { display: none; }
         .content-section.active { display: block; }
 
-        label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; font-family: inherit; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
+        /* Vista Previa y Botones */
         .preview-side { display: flex; flex-direction: column; align-items: center; position: sticky; top: 20px; }
-        #canvas { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        #label-display { margin: 15px 0; font-weight: 700; color: #1e293b; font-size: 1.1rem; }
+        #canvas { background: white; padding: 15px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; }
+        #label-display { font-weight: bold; color: #333; margin-bottom: 20px; font-size: 18px; }
+        .btn-download { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 18px; transition: 0.3s; }
+        .btn-download:hover { background: #a52121; transform: translateY(-2px); }
+
+        @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } .preview-side { position: static; } }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="editor-side">
+        <h2 style="color: #333; margin-top: 0;">Crea tu Código QR</h2>
         
-        .btn-download { background: var(--primary); color: white; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; }
-        .btn-reset-small { background: #e2e8f0; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; color: #64748b; }
+        <div class="type-selector">
+            <button class="tab-btn active" onclick="switchTab('url', this)">🔗 Enlace</button>
+            <button class="tab-btn" onclick="switchTab('whatsapp', this)">💬 WhatsApp</button>
+            <button class="tab-btn" onclick="switchTab('wifi', this)">📶 WiFi</button>
+            <button class="tab-btn" onclick="switchTab('text', this)">📄 Texto</button>
+        </div>
+
+        <div id="sec-url" class="content-section active">
+            <div class="field"><label>URL / LINK</label><input type="text" id="val-url" value="https://google.com" oninput="updateQR()"></div>
+        </div>
+
+        <div id="sec-whatsapp" class="content-section">
+            <div class="row">
+                <div class="field"><label>Teléfono (cód. país)</label><input type="text" id="wa-phone" placeholder="54911..." oninput="updateQR()"></div>
+                <div class="field"><label>Mensaje Inicial</label><input type="text" id="wa-msg" placeholder="Hola!" oninput="updateQR()"></div>
+            </div>
+        </div>
+
+        <div id="sec-wifi" class="content-section">
+            <div class="field"><label>Nombre de Red (SSID)</label><input type="text" id="wf-name" placeholder="Mi WiFi" oninput="updateQR()"></div>
+            <div class="row">
+                <div class="field"><label>Contraseña</label><input type="text" id="wf-pass" placeholder="Password123" oninput="updateQR()"></div>
+                <div class="field"><label>Seguridad</label>
+                    <select id="wf-enc" onchange="updateQR()"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">Sin Clave</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div id="sec-text" class="content-section">
+            <div class="field"><label>Tu Mensaje</label><textarea id="val-text" rows="3" oninput="updateQR()"></textarea></div>
+        </div>
+
+        <div class="accordion">
+            <div class="acc-header" onclick="toggleAcc(this)">🎨 Colores <span>▼</span></div>
+            <div class="acc-content active">
+                <div class="row">
+                    <div class="field"><label>Color de Puntos</label><input type="color" id="dotColor" value="#000000" oninput="updateQR()"></div>
+                    <div class="field"><label>Color de Fondo</label><input type="color" id="bgColor" value="#ffffff" oninput="updateQR()"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion">
+            <div class="acc-header" onclick="toggleAcc(this)">🏁 Diseño de Puntos <span>▼</span></div>
+            <div class="acc-content">
+                <div class="field">
+                    <label>Estilo del Patrón</label>
+                    <select id="dotStyle" onchange="updateQR()">
+                        <option value="square">Cuadrado</option><option value="dots" selected>Círculos</option><option value="rounded">Redondeado</option><option value="extra-rounded">Gota</option><option value="classy">Elegante</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion">
+            <div class="acc-header" onclick="toggleAcc(this)">🖼️ Logo y Texto <span>▼</span></div>
+            <div class="acc-content">
+                <div class="field"><label>URL de Logo Central</label><input type="text" id="logoUrl" placeholder="https://..." oninput="updateQR()"></div>
+                <div class="field"><label>Texto debajo del QR</label><input type="text" id="bottomLabel" value="¡Escanea ahora!" oninput="updateQR()"></div>
+            </div>
+        </div>
+
+        <div class="accordion">
+            <div class="acc-header" onclick="toggleAcc(this)">🔲 Marco (Esquinas) <span>▼</span></div>
+            <div class="acc-content">
+                <div class="field">
+                    <label>Forma de Esquina</label>
+                    <select id="cornerStyle" onchange="updateQR()">
+                        <option value="square">Cuadrado</option><option value="dot">Circular</option><option value="extra-rounded" selected>Redondeado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-side">
+        <div id="label-display">¡Escanea ahora!</div>
+        <div id="canvas"></div>
+        <button class="btn-download" onclick="downloadQR()">✔ Download PNG</button>
+    </div>
+</div>
+
+<script>
+    let currentType = 'url';
+
+    const qrCode = new QRCodeStyling({
+        width: 320, height: 320,
+        dotsOptions: { color: "#000000", type: "dots" },
+        backgroundOptions: { color: "#ffffff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 8 }
+    });
+
+    qrCode.append(document.getElementById("canvas"));
+
+    function switchTab(type, btn) {
+        currentType = type;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + type).classList.add('active');
+        updateQR();
+    }
+
+    function toggleAcc(header) {
+        const content = header.nextElementSibling;
+        content.classList.toggle('active');
+        header.querySelector('span').innerText = content.classList.contains('active') ? '▲' : '▼';
+    }
+
+    function updateQR() {
+        let finalData = "";
+        if (currentType === 'url') finalData = document.getElementById('val-url').value;
+        if (currentType === 'whatsapp') finalData = `https://wa.me/${document.getElementById('wa-phone').value}?text=${encodeURIComponent(document.getElementById('wa-msg').value)}`;
+        if (currentType === 'wifi') finalData = `WIFI:S:${document.getElementById('wf-name').value};T:${document.getElementById('wf-enc').value};P:${document.getElementById('wf-pass').value};;`;
+        if (currentType === 'text') finalData = document.getElementById('val-text').value;
+
+        document.getElementById('label-display').innerText = document.getElementById('bottomLabel').value;
+
+        qrCode.update({
+            data: finalData || " ",
+            dotsOptions: { color: document.getElementById('dotColor').value, type: document.getElementById('dotStyle').value },
+            backgroundOptions: { color: document.getElementById('bgColor').value },
+            image: document.getElementById('logoUrl').value,
+            cornersSquareOptions: { type: document.getElementById('cornerStyle').value, color: document.getElementById('dotColor').value },
+            cornersDotOptions: { type: document.getElementById('cornerStyle').value === 'dot' ? 'dot' : 'square', color: document.getElementById('dotColor').value },
+            margin: 0
+        });
+    }
+
+    function downloadQR() {
+        // Enviar evento a Vercel Analytics al descargar
+        if (window.va) {
+            window.va('event', { name: 'descarga_qr_pro', data: { tipo: currentType } });
+        }
+
+        qrCode.update({ margin: 5 }); // Marco de 5px para la descarga
+        qrCode.download({ name: "qr-pro-elite", extension: "png" }).then(() => {
+            qrCode.update({ margin: 0 });
+        });
+    }
+
+    // Carga Inicial
+    window.onload = updateQR;
+</script>
+
+</body>
+</html>        .btn-reset-small { background: #e2e8f0; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; color: #64748b; }
 
         @media (max-width: 800px) { .card { grid-template-columns: 1fr; } .preview-side { position: static; } }
     </style>
