@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Editor Pro+ con Marco</title>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 30px; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 950px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
+        h2 { grid-column: 1 / -1; margin: 0 0 20px 0; text-align: center; color: #1e293b; }
+        
+        .field-group { border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.2rem; background: #f8fafc; margin-bottom: 1.5rem; position: relative; }
+        .group-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+        .group-header h3 { margin: 0; font-size: 1rem; color: #475569; }
+        
+        .btn-reset-small { background: #e2e8f0; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; color: #64748b; }
+        .btn-reset-small:hover { background: #cbd5e1; color: #1e293b; }
+
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+        label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        input, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .preview-side { display: flex; flex-direction: column; align-items: center; position: sticky; top: 20px; }
+        #canvas { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        #label-display { margin: 15px 0; font-weight: 700; color: #1e293b; font-size: 1.1rem; }
+        
+        .main-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+        .btn-download { background: #1e293b; color: white; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-download:hover { background: #0f172a; }
+
+        @media (max-width: 800px) { .card { grid-template-columns: 1fr; } .preview-side { position: static; } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Generador de QR Dinámico</h2>
+
+    <div class="controls">
+        <div class="field-group">
+            <div class="group-header">
+                <h3>Contenido y Logo</h3>
+                <button class="btn-reset-small" onclick="resetSection('data')">Reset</button>
+            </div>
+            <div class="field">
+                <label>URL / Texto</label>
+                <input type="text" id="input-url" value="https://google.com">
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label>Logo URL</label>
+                    <input type="text" id="input-logo" placeholder="URL de la imagen">
+                </div>
+                <div class="field">
+                    <label>Texto Etiqueta</label>
+                    <input type="text" id="input-label" value="¡Escanea ahora!">
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="group-header">
+                <h3>Estilo de Puntos</h3>
+                <button class="btn-reset-small" onclick="resetSection('dots')">Reset</button>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label>Color 1</label>
+                    <input type="color" id="color-dots-1" value="#2563eb">
+                </div>
+                <div class="field">
+                    <label>Color 2 (Opcional)</label>
+                    <input type="color" id="color-dots-2" value="#2563eb">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label>Forma</label>
+                    <select id="select-dots-style">
+                        <option value="square">Cuadrado</option>
+                        <option value="dots">Círculos</option>
+                        <option value="rounded" selected>Redondeado</option>
+                        <option value="extra-rounded">Gota</option>
+                        <option value="classy">Elegante</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Tipo Degradado</label>
+                    <select id="select-dots-grad">
+                        <option value="none">Sólido</option>
+                        <option value="linear" selected>Lineal</option>
+                        <option value="radial">Radial</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="group-header">
+                <h3>Marcos de Esquina</h3>
+                <button class="btn-reset-small" onclick="resetSection('corners')">Reset</button>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label>Color Esquina</label>
+                    <input type="color" id="color-corners" value="#0f172a">
+                </div>
+                <div class="field">
+                    <label>Estilo Marco</label>
+                    <select id="select-corners-style">
+                        <option value="square">Cuadrado</option>
+                        <option value="dot">Círculo</option>
+                        <option value="extra-rounded" selected>Redondeado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-side">
+        <div id="canvas"></div>
+        <div id="label-display">¡Escanea ahora!</div>
+        <div class="main-actions">
+            <button class="btn-download" onclick="downloadQR()">Descargar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const defaults = {
+        url: "https://google.com", logo: "", label: "¡Escanea ahora!",
+        dots1: "#2563eb", dots2: "#2563eb", dotsStyle: "rounded", dotsGrad: "linear",
+        cornersColor: "#0f172a", cornersStyle: "extra-rounded"
+    };
+
+    const qrCode = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        type: "svg",
+        margin: 0, // Margen en vista previa 0 para que luzca bien en la web
+        data: defaults.url,
+        imageOptions: { crossOrigin: "anonymous", margin: 5 }
+    });
+
+    qrCode.append(document.getElementById("canvas"));
+
+    function updateQR() {
+        const url = document.getElementById('input-url').value;
+        const logo = document.getElementById('input-logo').value;
+        const label = document.getElementById('input-label').value;
+        const dots1 = document.getElementById('color-dots-1').value;
+        const dots2 = document.getElementById('color-dots-2').value;
+        const dotsStyle = document.getElementById('select-dots-style').value;
+        const dotsGrad = document.getElementById('select-dots-grad').value;
+        const cornerColor = document.getElementById('color-corners').value;
+        const cornerStyle = document.getElementById('select-corners-style').value;
+
+        document.getElementById('label-display').innerText = label;
+
+        qrCode.update({
+            data: url || " ",
+            image: logo,
+            margin: 0, 
+            dotsOptions: {
+                type: dotsStyle,
+                color: dots1,
+                gradient: dotsGrad !== "none" ? {
+                    type: dotsGrad,
+                    colorStops: [{ offset: 0, color: dots1 }, { offset: 1, color: dots2 }]
+                } : null
+            },
+            cornersSquareOptions: { type: cornerStyle, color: cornerColor },
+            cornersDotOptions: { type: cornerStyle === 'dot' ? 'dot' : 'square', color: cornerColor }
+        });
+    }
+
+    function resetSection(section) {
+        if (section === 'data') {
+            document.getElementById('input-url').value = defaults.url;
+            document.getElementById('input-logo').value = defaults.logo;
+            document.getElementById('input-label').value = defaults.label;
+        } else if (section === 'dots') {
+            document.getElementById('color-dots-1').value = defaults.dots1;
+            document.getElementById('color-dots-2').value = defaults.dots2;
+            document.getElementById('select-dots-style').value = defaults.dotsStyle;
+            document.getElementById('select-dots-grad').value = defaults.dotsGrad;
+        } else if (section === 'corners') {
+            document.getElementById('color-corners').value = defaults.cornersColor;
+            document.getElementById('select-corners-style').value = defaults.cornersStyle;
+        }
+        updateQR();
+    }
+
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', updateQR);
+    });
+
+    function downloadQR() {
+        // Al descargar, forzamos un margen de 5px para que no quede pegado al borde del archivo
+        qrCode.update({ margin: 5 });
+        qrCode.download({ name: "mi-qr-pro", extension: "png" }).then(() => {
+            // Regresamos el margen a 0 para la vista previa web después de descargar
+            qrCode.update({ margin: 0 });
+        });
+    }
+
+    updateQR();
+</script>
+
+</body>
+</html>
